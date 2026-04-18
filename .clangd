@@ -1,0 +1,6 @@
+CompileFlags:
+  Add:
+    - -isystem
+    - C:/Users/chamr/.platformio/packages/toolchain-xtensa-esp32s3/xtensa-esp32s3-elf/include
+    - -isystem
+    - C:/Users/chamr/.platformio/packages/toolchain-xtensa-esp32s3/xtensa-esp32s3-elf/sys-include
