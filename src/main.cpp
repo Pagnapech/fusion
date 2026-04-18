@@ -1,17 +1,17 @@
 #include <Arduino.h>
 #include "imu_bno055.h"
 #include "gps_neo6m.h"
+#include "csv_logger.h"
 
 IMUData imuData;
 GPSData gpsData;
 
 HardwareSerial GPSPort(1);
 
+static const unsigned long kCsvIntervalMs = 2000;
+
 void setup() {
   Serial.begin(115200);
-  delay(2000);
-
-  Serial.println("Starting modular BNO055 + Neo-6M test...");
 
   if (!imuInit(11, 10)) {
     Serial.println("ERROR: BNO055 not found!");
@@ -20,30 +20,28 @@ void setup() {
     }
   }
 
-  Serial.println("BNO055 initialized successfully.");
-
   // GPS TX -> GPIO18
   // GPS RX -> not connected
   gpsInit(GPSPort, 18, -1, 9600);
 
-  Serial.println("Neo-6M initialized.");
+  printCSVHeader(Serial);
 }
 
 void loop() {
-  static unsigned long lastPrint = 0;
+  static unsigned long lastCsvMs = 0;
 
   gpsUpdate();
 
-  if (millis() - lastPrint >= 1000) {
-    lastPrint = millis();
-
-    if (imuRead(imuData)) {
-      imuPrint(imuData);
-    } else {
-      Serial.println("IMU read failed.");
-    }
-
-    gpsRead(gpsData);
-    gpsPrint(gpsData);
+  unsigned long now = millis();
+  if (now - lastCsvMs < kCsvIntervalMs) {
+    return;
   }
+  lastCsvMs = now;
+
+  gpsRead(gpsData);
+  if (!imuRead(imuData)) {
+    imuData.heading = 0.0f;
+  }
+
+  printCSVRow(Serial, now, gpsData, imuData);
 }

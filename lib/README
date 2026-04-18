@@ -44,3 +44,16 @@ libraries by scanning project source files.
 
 More information about PlatformIO Library Dependency Finder
 - https://docs.platformio.org/page/librarymanager/ldf.html
+
+
+
+When it is a "Need to Have" (Mission Critical)
+If your project falls into any of these categories, radio (specifically LoRa or APRS) is non-negotiable:
+
+  - Off-Grid Operations: If you are tracking a vehicle in rural areas, mountains, or forests where 4G/5G coverage is non-existent, radio is your only way to get data out.
+
+  - Emergency & Search and Rescue: In a disaster scenario where cell towers are down, a radio-based tracker (like those used in the Meshtastic or LoRa APRS ecosystems) ensures you can still broadcast your coordinates to a base station or other mobile nodes.
+
+  - Zero-Cost Data: If you are tracking a fleet of 50 vehicles, paying $10/month per SIM card ($500/month) is a massive expense. Radio broadcasting is free after the initial hardware cost.
+
+  - Low-Latency Team Coordination: If multiple vehicles need to know each other's positions in real-time (e.g., a convoy or a swarm of drones), broadcasting directly over radio (P2P) is faster than sending data to a cloud server and back down.
