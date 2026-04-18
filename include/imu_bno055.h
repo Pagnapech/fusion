@@ -7,6 +7,11 @@ struct IMUData {
   float pitch;
   float roll;
 
+  /** Linear acceleration (gravity removed), sensor frame, m/s^2 */
+  float linAccX;
+  float linAccY;
+  float linAccZ;
+
   uint8_t calSys;
   uint8_t calGyro;
   uint8_t calAccel;

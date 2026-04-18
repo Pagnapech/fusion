@@ -34,6 +34,11 @@ bool imuRead(IMUData &data) {
   data.pitch   = orientationData.orientation.y;
   data.roll    = orientationData.orientation.z;
 
+  imu::Vector<3> la = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
+  data.linAccX = (float)la.x();
+  data.linAccY = (float)la.y();
+  data.linAccZ = (float)la.z();
+
   bno.getCalibration(
       &data.calSys,
       &data.calGyro,
