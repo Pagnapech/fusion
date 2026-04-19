@@ -3,9 +3,7 @@
 #include "gps_neo6m.h"
 #include "csv_logger.h"
 #include "ekf_nav.h"
-#include "nav_state.h"
-#include "mission_espnow.h"
-#include "waypoint_nav.h"
+#include "rpi_uart.h"
 
 IMUData imuData;
 GPSData gpsData;
@@ -39,8 +37,8 @@ void setup() {
 
   printCSVHeader(Serial);
 
-  missionEspNowInit();
-  Serial.println(F("ESP-NOW mission link ready (see espnow_config.h for peer MAC + channel)"));
+  rpiUartInit();
+  Serial.println(F("Raspberry Pi UART: position lines on UART2 (see rpi_uart.cpp for pins)"));
 }
 
 void loop() {
@@ -72,15 +70,10 @@ void loop() {
     EkfOutput ekfOut{};
     ekfGetOutput(ekfOut);
 
-    g_ekf_lat = ekfOut.latitude_deg;
-    g_ekf_lon = ekfOut.longitude_deg;
-    g_ekf_heading_deg = ekfOut.heading_deg;
-    g_ekf_heading_valid = ekfOut.origin_set;
+    rpiUartSendPosition(ekfOut.latitude_deg, ekfOut.longitude_deg);
 
     addSampleToAccumulator(gCsvAcc, ekfOut);
   }
-
-  runNavigationTick();
 
   if (now - gLastCsvMs >= kCsvAverageIntervalMs) {
     gLastCsvMs = now;
