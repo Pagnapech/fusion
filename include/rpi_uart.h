@@ -10,5 +10,11 @@
  */
 void rpiUartInit();
 
-/** One line per call: "latitude_deg,longitude_deg\\r\\n" (7 decimal places). */
+/**
+ * One line per call: "latitude_deg,longitude_deg\\r\\n" (7 decimal places).
+ * Invalid (non-finite) coordinates are not sent.
+ *
+ * If the Pi still sees occasional garbage: use a solid GND, short wires, 115200 8N1 on the Pi,
+ * and avoid routing UART next to switching power/noise sources.
+ */
 void rpiUartSendPosition(double latitude_deg, double longitude_deg);

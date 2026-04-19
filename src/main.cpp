@@ -12,12 +12,14 @@ HardwareSerial GPSPort(1);
 
 static const unsigned long kSampleIntervalMs = 100;
 static const unsigned long kCsvAverageIntervalMs = 1000;
+static const unsigned long kRpiUartIntervalMs = 500;
 
 static bool gImuHwOk = false;
 
 static CsvAccumulator gCsvAcc;
 static unsigned long gLastSampleMs = 0;
 static unsigned long gLastCsvMs = 0;
+static unsigned long gLastRpiUartMs = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -38,7 +40,7 @@ void setup() {
   printCSVHeader(Serial);
 
   rpiUartInit();
-  Serial.println(F("Raspberry Pi UART: position lines on UART2 (see rpi_uart.cpp for pins)"));
+  Serial.println(F("Raspberry Pi UART: position every 500 ms on UART2 (see rpi_uart.cpp for pins)"));
 }
 
 void loop() {
@@ -70,7 +72,10 @@ void loop() {
     EkfOutput ekfOut{};
     ekfGetOutput(ekfOut);
 
-    rpiUartSendPosition(ekfOut.latitude_deg, ekfOut.longitude_deg);
+    if (now - gLastRpiUartMs >= kRpiUartIntervalMs) {
+      gLastRpiUartMs = now;
+      rpiUartSendPosition(ekfOut.latitude_deg, ekfOut.longitude_deg);
+    }
 
     addSampleToAccumulator(gCsvAcc, ekfOut);
   }
